@@ -37,7 +37,8 @@ int main_sdl(int **board, param_list_t p){
 
     printf("Starting evolution... \n");
 
-    for (int i=0; i<p.nb_max_gen; i++) {
+    int gen=0;
+    while (gen<p.nb_max_gen) {
 
         clock_gettime(CLOCK_MONOTONIC, &t2); 
         diff = ( t2.tv_nsec - t1.tv_nsec ) / 1000000L + ( t2.tv_sec - t1.tv_sec ) * 1000L;    
@@ -46,7 +47,7 @@ int main_sdl(int **board, param_list_t p){
         SDL_RenderClear(renderer);
 
         if (p.debug) {
-            printf("GENERATION : %d \n", i);
+            printf("GENERATION : %d \n", gen);
             show_board(board, p.height, p.width);
         }
 
@@ -90,9 +91,7 @@ int main_sdl(int **board, param_list_t p){
         if (!p.pause && diff > p.period) {
             t1 = t2;
             next_generation(board, p.height, p.width);
-        }
-        else{
-            i--;
+            gen++;
         }
     }
 
