@@ -24,7 +24,7 @@ int main_sdl(int **board, param_list_t p){
     uint64_t diff;
     clock_gettime(CLOCK_MONOTONIC, &t1); 
     
-    uint32_t fps_t1, fps_t2;
+    uint32_t fps_t1;
     uint32_t fps_frames = 0;
     fps_t1 = SDL_GetTicks();
 
@@ -82,7 +82,6 @@ int main_sdl(int **board, param_list_t p){
         fps_frames++;
         if (fps_t1 < SDL_GetTicks() - FPS_INTERVAL * 1000) {
             fps_t1 = SDL_GetTicks();
-            fps_t2 = fps_frames;
             printf("FPS = %u \n", fps_frames);
             fps_frames = 0;
         }
@@ -99,5 +98,5 @@ int main_sdl(int **board, param_list_t p){
 
     SDL_Quit();
    
-
+    return 0;
 }

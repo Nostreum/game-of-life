@@ -5,7 +5,7 @@ void read_file(char *filename, int *h, int *w, int shape[PATTERN_MAX_SIZE][PATTE
     FILE *f = fopen(filename, "r");
 
     if (!f) {
-        printf("Can not open file %s \n", filename);
+        printf("Cannot open file %s \n", filename);
         exit(0);
     }
 
@@ -15,8 +15,10 @@ void read_file(char *filename, int *h, int *w, int shape[PATTERN_MAX_SIZE][PATTE
 
     for (int i=0; i<PATTERN_MAX_SIZE; i++) {
         for (int j=0; j<PATTERN_MAX_SIZE; j++) {
-            int r = fscanf(f, "%1d", &nb_read); 
             
+            int m = fscanf(f, "%1d", &nb_read); 
+            if(m == 0) continue;            
+
             if (nb_read == 2) {
                 *w = j > *w ? j : *w;
                 break;

@@ -32,9 +32,6 @@ void init_board(int **board, int height, int width, char *filename) {
     int h, w;
     int shape[PATTERN_MAX_SIZE][PATTERN_MAX_SIZE];
 
-    int oi = width/4;
-    int oj = height/2;
-
     read_file(filename, &h, &w, shape);  
  
     for (int i = 0; i<h; i++) {
@@ -57,7 +54,6 @@ void next_generation(int **board, int height, int width) {
 
             int sum_dead  = 0;
             int sum_alive = 0;
-            int count=0;
             for (int k=i-1; k<=i+1; k++) {
                 for (int l=j-1; l<=j+1; l++) {
                     if (k == i && l == j) continue;
