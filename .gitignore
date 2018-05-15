@@ -1,2 +1,3 @@
 life
-src/*.o 
+src/*.swp
+obj/ 
