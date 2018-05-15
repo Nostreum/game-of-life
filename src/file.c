@@ -15,7 +15,7 @@ void read_file(char *filename, int *h, int *w, int shape[PATTERN_MAX_SIZE][PATTE
 
     for (int i=0; i<PATTERN_MAX_SIZE; i++) {
         for (int j=0; j<PATTERN_MAX_SIZE; j++) {
-            fscanf(f, "%1d", &nb_read); 
+            int r = fscanf(f, "%1d", &nb_read); 
             
             if (nb_read == 2) {
                 *w = j > *w ? j : *w;

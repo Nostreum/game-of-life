@@ -31,6 +31,34 @@ typedef struct param_list_s {
 
 } param_list_t;
 
+inline static void print_help() {
+
+    printf("Usage: life [option] \n");
+    printf("Options: \n");
+    printf("    -h        [Nb of row] \n");
+    printf("    -w        [Nb of column] \n");
+    printf("    -max_gen  [Maximum number of generation] \n");
+    printf("    -period   [Time between 2 generations (in ms)] \n");
+    printf("    -file     [Shape file (must be in shape folder)] \n");
+    printf("    -debug    : Debug mode \n");
+    printf("    -h        : Display this information \n");
+    printf("\n\n");
+    printf("Shape file synthax : \n");
+    printf("    0 : Dead cell \n");
+    printf("    1 : Alive cell \n");
+    printf("    2 : End of row \n");
+    printf("    3 : End of column (just need 1) \n");
+    printf("\n");
+    printf("Example with a square: \n");
+    printf("    1 1 2 \n");
+    printf("    1 1 2 \n");
+    printf("    3         \n");
+    printf("\n\n");
+
+    exit(0);
+}
+
+
 inline static void init_param_list(param_list_t *p) {
 
     p->height           = 16;
@@ -74,33 +102,5 @@ inline static void read_param_cmd(int argc, char *argv[], param_list_t *p) {
     } 
 
 }
-
-inline static void print_help() {
-
-    printf("Usage: life [option] \n");
-    printf("Options: \n");
-    printf("    -h        [Nb of row] \n");
-    printf("    -w        [Nb of column] \n");
-    printf("    -max_gen  [Maximum number of generation] \n");
-    printf("    -period   [Time between 2 generations (in ms)] \n");
-    printf("    -file     [Shape file (must be in shape folder)] \n");
-    printf("    -debug    : Debug mode \n");
-    printf("    -h        : Display this information \n");
-    printf("\n\n");
-    printf("Shape file synthax : \n");
-    printf("    0 : Dead cell \n");
-    printf("    1 : Alive cell \n");
-    printf("    2 : End of row \n");
-    printf("    3 : End of column (just need 1) \n");
-    printf("\n");
-    printf("Example with a square: \n");
-    printf("    1 1 2 \n");
-    printf("    1 1 2 \n");
-    printf("    3         \n");
-    printf("\n\n");
-
-    exit(0);
-}
-
 
 #endif /* GLOBAL_H_ */
