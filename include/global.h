@@ -36,12 +36,12 @@ inline static void print_help() {
 
     printf("Usage: life [option] \n");
     printf("Options: \n");
-    printf("    -h        [Nb of row] \n");
-    printf("    -w        [Nb of column] \n");
+    printf("    -h        [Nb of column] \n");
+    printf("    -w        [Nb of row] \n");
     printf("    -cs       [Cell size (px)] \n");
     printf("    -max_gen  [Maximum number of generation] \n");
     printf("    -period   [Time between 2 generations (in ms)] \n");
-    printf("    -file     [Shape file (must be in shape folder)] \n");
+    printf("    -file     [Shape file] \n");
     printf("    -debug    : Debug mode \n");
     printf("    -h        : Display this information \n");
     printf("\n\n");
