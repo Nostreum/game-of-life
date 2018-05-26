@@ -41,6 +41,16 @@ void init_board(int **board, int height, int width, char *filename) {
     }
 }
 
+void clean_board(int **board, int height, int width) {
+
+    for (int i=0; i<height; i++) {
+        for (int j=0; j<width; j++) {
+            board[i][j] = DEAD;
+        }
+    }
+
+}
+
 void next_generation(int **board, int height, int width) {
 
     int **board_c = copy_board(board, height, width);
@@ -84,6 +94,10 @@ void next_generation(int **board, int height, int width) {
         free(board_c[i]);
 
     free(board_c);
+}
+
+void update_board(int **board, int x, int y, int new_state) {
+    board[x][y] = new_state;
 }
 
 void show_board(int **board, int height, int width) {

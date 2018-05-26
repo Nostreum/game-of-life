@@ -11,13 +11,9 @@ int main(int argc, char *argv[]) {
     read_param_cmd(argc, argv, &p);
     print_param_list(p);
 
-    char *filename_full = malloc(strlen("shape/") + strlen(p.filename));
-    strcpy(filename_full, "shape/");
-    strcat(filename_full, p.filename);
-
     /* Board */
     int **board = alloc_board(p.height, p.width);
-    init_board(board, p.height, p.width, filename_full);
+    init_board(board, p.height, p.width, p.filename);
 
     main_sdl(board, p); 
 

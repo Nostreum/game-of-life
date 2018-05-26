@@ -1,8 +1,8 @@
-CC=gcc
-CFLAGS= -O3 -Wall
+CC          =gcc
+CFLAGS      = -O3 -Wall
 
 INCLUDE     = -I include/
-LIBS        = -lSDL2
+LIBS        = -lSDL2 -lSDL2_ttf
 EXEC        = life
 
 SRC         = src/

@@ -13,7 +13,7 @@
 
 #define FPS_INTERVAL        1.0
 
-#define CELL_SIZE           4 
+#define CELL_SIZE           20 
 #define PATTERN_MAX_SIZE    200
 
 typedef struct param_list_s {
@@ -23,6 +23,7 @@ typedef struct param_list_s {
     int height;
     int width;
     int period;
+    int cell_size;
 
     uint64_t nb_max_gen;
 
@@ -37,6 +38,7 @@ inline static void print_help() {
     printf("Options: \n");
     printf("    -h        [Nb of row] \n");
     printf("    -w        [Nb of column] \n");
+    printf("    -cs       [Cell size (px)] \n");
     printf("    -max_gen  [Maximum number of generation] \n");
     printf("    -period   [Time between 2 generations (in ms)] \n");
     printf("    -file     [Shape file (must be in shape folder)] \n");
@@ -63,11 +65,12 @@ inline static void init_param_list(param_list_t *p) {
 
     p->height           = 16;
     p->width            = 16;
+    p->cell_size        = 20;
     p->nb_max_gen       = 1000000L;
     p->period           = 250;
     p->pause            = false;
     p->debug            = false;
-    p->filename         = "shape.txt";
+    p->filename         = "shape/shape.txt";
 }
 
 inline static void print_param_list(param_list_t p) {
@@ -75,6 +78,7 @@ inline static void print_param_list(param_list_t p) {
     printf("Params: \n");
     printf("    Height         : %d  \n", p.height);
     printf("    Width          : %d  \n", p.width);
+    printf("    Cell size      : %d  \n", p.cell_size);
     printf("    Nb max gen     : %lu \n", p.nb_max_gen);
     printf("    Period         : %d  \n", p.period);
     printf("    Debug          : %s  \n", p.debug ? "True" : "False");
@@ -97,6 +101,8 @@ inline static void read_param_cmd(int argc, char *argv[], param_list_t *p) {
             p->debug = true;
         else if (strcmp(argv[i], "-file") == 0 && argc > i + 1)
             p->filename = argv[i+1];
+        else if (strcmp(argv[i], "-cs") == 0 && argc > i + 1)
+            p->cell_size = atoi(argv[i+1]);
         else if (strcmp(argv[i], "-h") == 0 || strcmp(argv[i], "--help") == 0)
             print_help();
     } 
