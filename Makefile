@@ -1,5 +1,5 @@
 CC          =gcc
-CFLAGS      = -O3 -Wall
+CFLAGS      = -O3 -Wall -msse2
 
 INCLUDE     = -I include/
 LIBS        = -lSDL2 -lSDL2_ttf
