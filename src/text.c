@@ -4,10 +4,10 @@ sdl_text_t* init_sdl_text(SDL_Renderer *renderer, int x, int y, char *text, char
 
     sdl_text_t *t = (sdl_text_t *) malloc(sizeof(sdl_text_t));
 
-    t->color.r = 255;
-    t->color.g = 0;
+    t->color.r = 50;
+    t->color.g = 50;
     t->color.b = 255;
-    t->font  = TTF_OpenFont(fontname, 50);
+    t->font  = TTF_OpenFont(fontname, 30);
 
     t->surface = TTF_RenderText_Solid(t->font, text, t->color);
     t->texture = SDL_CreateTextureFromSurface(renderer, t->surface);
