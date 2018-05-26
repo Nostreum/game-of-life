@@ -51,6 +51,8 @@ int main_sdl(int **board, param_list_t p){
     int clic_y = 0;
 
     sdl_text_t *text_gen = init_sdl_text(board_sdl->renderer, 0, 0, "Generation = 0", "font/OSB.ttf");
+    sdl_text_t *text_fps = init_sdl_text(board_sdl->renderer, 0, 35, "FPS = X", "font/OSB.ttf");
+   
     char gt[50];
 
     int gen=0;
@@ -144,13 +146,18 @@ int main_sdl(int **board, param_list_t p){
         fps_frames++;
         if (fps_t1 < SDL_GetTicks() - FPS_INTERVAL * 1000) {
             fps_t1 = SDL_GetTicks();
-            printf("FPS = %u \n", fps_frames);
+            printf("FPS = %d \n", fps_frames);
+            
+            sprintf(gt, "FPS = %d", fps_frames);
+            update_sdl_text(board_sdl->renderer, text_fps, gt); 
+        
             fps_frames = 0;
         }
 
         sprintf(gt, "Generation = %d", gen);
         update_sdl_text(board_sdl->renderer, text_gen, gt);
 
+        SDL_RenderCopy(board_sdl->renderer, text_fps->texture, NULL, &text_fps->rect);
         SDL_RenderCopy(board_sdl->renderer, text_gen->texture, NULL, &text_gen->rect);
         SDL_RenderPresent(board_sdl->renderer); 
         if (!p.pause && diff > p.period) {

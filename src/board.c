@@ -55,10 +55,8 @@ void next_generation(int **board, int height, int width) {
 
     int **board_c = copy_board(board, height, width);
 
-    for (int i=0; i<height; i++) {
-        for (int j=0; j<width; j++) {
-
-            if (i==0 || j==0 || i==height-1 || j==width-1) continue;
+    for (int i=1; i<height-1; i++) {
+        for (int j=1; j<width-1; j++) {
 
             int cs = board_c[i][j];
 

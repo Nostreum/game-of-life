@@ -9,6 +9,7 @@ typedef struct sdl_text_s {
 
     SDL_Surface *surface;
     SDL_Color   color;
+    SDL_Color   bgcolor;
     SDL_Texture *texture;
     SDL_Rect    rect;
     TTF_Font    *font;
