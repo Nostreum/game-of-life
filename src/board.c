@@ -1,7 +1,6 @@
 #include <board.h>
 #include <file.h>
 #include <emmintrin.h>
-#include <simd.h>
 
 int** alloc_board(int height, int width) {
 
@@ -97,75 +96,102 @@ void next_generation(int **board, int height, int width) {
 }
 
 // TODO: In progress
-//void next_generation_simd(int_a **board, int height, int width) {
-//
-//    int_a **board_c = copy_board(board, height, width);
-//
-//    vint32 a0, a1, a2;
-//    vint32 b0, b1, b2;
-//    vint32 c0, c1, c2;
-//   
-//    vint32 l0, l1, l2;
-//    vint32 r0, r1, r2;
-//    vint32 s0, s1, s2;
-//
-//    vint32 m0 = vint32_set(0, 0xFFFF, 0, 0);
-//    vint32 m1 = vint32_set(0, 0, 0xFFFF, 0);
-//    vint32 mask_j = vint32_set(0xFFFF, 0xFFFF, 0xFFFF, 0);
-// 
-//    for (int i=0; i<height; i++) {
-//        
-//        a0 = vint32_load2D(board, 0, 0);
-//        a1 = vint32_load2D(board, 1, 0);
-//        a2 = vint32_load2D(board, 2, 0);
-//
-//        b0 = vint32_load2D(board, 0, 1);
-//        b1 = vint32_load2D(board, 1, 1);
-//        b2 = vint32_load2D(board, 2, 1);
-//
-//        for (int j=0; j<width/4; j++) {
-//
-//            /* Load new column */
-//            c0 = vint32_load2D(board, i-1, j+1);
-//            c1 = vint32_load2D(board, i,   j+1);
-//            c2 = vint32_load2D(board, i+1, j+1);
-//
-//            /* left shift */
-//            l0 = vint32_left(a0, b0);
-//            l1 = vint32_left(a1, b1);
-//            l2 = vint32_left(a2, b2);
-//
-//            /* right shift */
-//            r0 = vint32_right(b0, c0);
-//            r1 = vint32_right(b1, c1);
-//            r2 = vint32_right(b2, c2);
-//
-//            /* Compute 1st point */
-//            s0 = vint32_add3(l0, l1, l2);
-//            s0 = vint32_sub(s0, vint32_and(b1, m0));
-//            s0 = vint32_and(s0, mask_j);
-//            s0 = vint32_hadd(s0);
-//            s0 = vint32_hadd(s0);
-//
-//            /* Compute 2nd point */
-//
-//            /* Compute 3th point */
-//
-//            /* Compute 4th point */
-//
-//            /* Register rotation */
-//            a0 = b0;
-//            a1 = b1;
-//            a2 = b2;
-//
-//            b0 = c0;
-//            b1 = c1;
-//            b2 = c2;
-//            
-//        }
-//    }
-//
-//}
+void next_generation_simd_i32(int_a **board, int height, int width) {
+
+    int_a **board_c = copy_board(board, height, width);
+
+    vint32 a0, a1, a2;
+    vint32 b0, b1, b2;
+    vint32 c0, c1, c2;
+
+    vint32 l0, l1, l2;
+    vint32 r0, r1, r2;
+
+    vint32 la, ra;
+    vint32 sla1, sla2;
+    vint32 sra1, sra2;
+
+    vint32 final;
+
+    vint32 z = vint32_setall(0);
+    vint32 two = vint32_setall(2);
+    vint32 three = vint32_setall(3);
+
+    vint32 lt, gt, eq, lt_o_gt, updt;
+
+    vint32 mask0 = vint32_set(1, 0, 0, 0);
+    vint32 mask1 = vint32_set(0, 1, 0, 0);
+    vint32 mask2 = vint32_set(0, 0, 1, 0);
+    vint32 mask3 = vint32_set(0, 0, 0, 1);
+
+    for (int i=1; i<height-1; i++) {
+       
+        a0 = vint32_load2D(board_c, i-1, 0);
+        a1 = vint32_load2D(board_c, i,   0);
+        a2 = vint32_load2D(board_c, i+1, 0);
+
+        b0 = vint32_load2D(board_c, i-1, 1);
+        b1 = vint32_load2D(board_c, i,   1);
+        b2 = vint32_load2D(board_c, i+1, 1);
+
+        for (int j=1; j<width/4; j++) {
+   
+            /* Load new column */
+            c0 = vint32_load2D(board_c, i-1, j+1);
+            c1 = vint32_load2D(board_c, i,   j+1);
+            c2 = vint32_load2D(board_c, i+1, j+1);
+
+            /* left shift */
+            l0 = vint32_left(a0, b0);
+            l1 = vint32_left(a1, b1);
+            l2 = vint32_left(a2, b2);
+
+            /* right shift */
+            r0 = vint32_right(b0, c0);
+            r1 = vint32_right(b1, c1);
+            r2 = vint32_right(b2, c2);       
+
+            /* Sum */
+            la = vint32_add3(l0, l1, l2);
+            ra = vint32_add3(r0, r1, r2);
+
+            /* Compute */
+            sla1 = vint32_and(vint32_haddf(vint32_left(z, la)), mask0);
+            sla2 = vint32_and(vint32_haddf(vint32_right(la, z)),mask1);
+
+            sra1 = vint32_and(vint32_haddf(vint32_left(z, ra)), mask2);
+            sra2 = vint32_and(vint32_haddf(vint32_right(ra, z)), mask3);
+
+            final = vint32_add4(sla1, sla2, sra1, sra2);
+            final = vint32_sub(final, b1);
+
+            /* Rules */
+            lt = vint32_lt(final, two);
+            gt = vint32_lt(final, three);
+            eq = vint32_eq(final, three);
+
+            lt_o_gt = vint32_or(lt, gt);
+
+            updt = vint32_or(vint32_and(lt_o_gt, b1), vint32_and(eq, vint32_not(b1)));
+            
+            final = vint32_add(updt, b1);
+            final = vint32_and(final, vint32_lt(final, two));
+ 
+            /* Storing results */
+            vint32_store2D(board, i, j, final);
+
+            /* Register rotation */
+            a0 = b0;
+            a1 = b1;
+            a2 = b2;
+
+            b0 = c0;
+            b1 = c1;
+            b2 = c2;
+             
+        }
+    }
+}
 
 void update_board(int **board, int x, int y, int new_state) {
     board[x][y] = new_state;

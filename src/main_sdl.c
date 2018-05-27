@@ -155,7 +155,7 @@ int main_sdl(int **board, param_list_t p){
         SDL_RenderPresent(board_sdl->renderer); 
         if (!p.pause && diff > p.period) {
             t1 = t2;
-            next_generation(board, p.height, p.width);
+            next_generation_simd_i32(board, p.height, p.width);
             gen++;
         }
     }
