@@ -34,8 +34,8 @@ void render_board_sdl(board_SDL_t *board_sdl, int **board, int x, int y, int h, 
 SDL_Rect create_rect(int x, int y, int cs) {
 
   SDL_Rect r;
-  r.x = x * cs;
-  r.y = y * cs;
+  r.x = y * cs;
+  r.y = x * cs;
   r.w = cs;
   r.h = cs;
   return r;

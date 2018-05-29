@@ -42,8 +42,8 @@ int main_sdl(int **board, param_list_t p){
 
     int nb_case_x = WINDOW_SIZE_W / p.cell_size;
     int nb_case_y = WINDOW_SIZE_H / p.cell_size;
-    int x = p.width  / 2  - nb_case_x;
-    int y = p.height / 2  - nb_case_y;
+    int x = p.height / 2  - nb_case_x;
+    int y = p.width  / 2  - nb_case_y;
     int nx = nb_case_x;
     int ny = nb_case_y;
 
@@ -120,12 +120,12 @@ int main_sdl(int **board, param_list_t p){
                         case SDL_BUTTON_LMASK:
                             clic_x = (event.motion.x / p.cell_size) + x;
                             clic_y = (event.motion.y / p.cell_size) + y;
-                            update_board(board, clic_x, clic_y, ALIVE); 
+                            update_board(board, clic_y, clic_x, ALIVE); 
                             break;
                         case SDL_BUTTON_RMASK: 
                             clic_x = (event.motion.x / p.cell_size) + x;
                             clic_y = (event.motion.y / p.cell_size) + y;
-                            update_board(board, clic_x, clic_y, DEAD); 
+                            update_board(board, clic_y, clic_x, DEAD); 
                             break;
                         default:
                             break;
@@ -137,14 +137,14 @@ int main_sdl(int **board, param_list_t p){
 
         X_OFFSCREEN(p.height - MOVE_SPEED);
         Y_OFFSCREEN(p.width  - MOVE_SPEED); 
-        int nb_cell_x = ( x + nx > p.width  ) ? p.width  : x + nx;
-        int nb_cell_y = ( y + ny > p.height ) ? p.height : y + ny;
+        int nb_cell_x = ( x + nx > p.height ) ? p.height  : x + nx;
+        int nb_cell_y = ( y + ny > p.width  ) ? p.width   : y + ny;
         render_board_sdl(board_sdl, board, x, y, nb_cell_x, nb_cell_y, p.cell_size);
 
         fps_frames++;
         if (fps_t1 < SDL_GetTicks() - FPS_INTERVAL * 1000) {
             fps_t1 = SDL_GetTicks();
-            printf("FPS = %u \n", fps_frames);
+            if(p.debug) printf("FPS = %u \n", fps_frames);
             fps_frames = 0;
         }
 
@@ -155,7 +155,10 @@ int main_sdl(int **board, param_list_t p){
         SDL_RenderPresent(board_sdl->renderer); 
         if (!p.pause && diff > p.period) {
             t1 = t2;
-            next_generation_simd_i32(board, p.height, p.width);
+            if(p.simd)
+                next_generation_simd_i32(board, p.height, p.width);
+            else
+                next_generation(board, p.height, p.width);
             gen++;
         }
     }

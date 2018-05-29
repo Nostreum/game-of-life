@@ -1,6 +1,6 @@
 #include <board.h>
 #include <file.h>
-#include <emmintrin.h>
+#include <debug.h>
 
 int** alloc_board(int height, int width) {
 
@@ -20,6 +20,17 @@ int** alloc_board(int height, int width) {
 int **copy_board(int **board, int height, int width) {
 
     int **board_c = alloc_board(height, width);
+
+    for (int i=0; i<height; i++)
+        for (int j=0; j<width; j++)
+            board_c[i][j] = board[i][j];
+
+    return board_c;
+}
+
+int_a **copy_board_a(int_a **board, int height, int width) {
+
+    int_a **board_c = alloc_board(height, width);
 
     for (int i=0; i<height; i++)
         for (int j=0; j<width; j++)
@@ -72,13 +83,13 @@ void next_generation(int **board, int height, int width) {
                 }
             }
 
-            // Cell is alive
             if (cs == ALIVE) {
                 // Under or over population
                 if (sum_alive < 2 || sum_alive > 3)
                 board[i][j] = DEAD;
             }
             else if (cs == DEAD) {
+                // Born
                 if (sum_alive == 3)
                     board[i][j] = ALIVE;
             }
@@ -95,10 +106,9 @@ void next_generation(int **board, int height, int width) {
     free(board_c);
 }
 
-// TODO: In progress
 void next_generation_simd_i32(int_a **board, int height, int width) {
 
-    int_a **board_c = copy_board(board, height, width);
+    int_a **board_c = copy_board_a(board, height, width);
 
     vint32 a0, a1, a2;
     vint32 b0, b1, b2;
@@ -114,15 +124,17 @@ void next_generation_simd_i32(int_a **board, int height, int width) {
     vint32 final;
 
     vint32 z = vint32_setall(0);
+    vint32 one = vint32_setall(0);
     vint32 two = vint32_setall(2);
     vint32 three = vint32_setall(3);
 
     vint32 lt, gt, eq, lt_o_gt, updt;
 
-    vint32 mask0 = vint32_set(1, 0, 0, 0);
-    vint32 mask1 = vint32_set(0, 1, 0, 0);
-    vint32 mask2 = vint32_set(0, 0, 1, 0);
-    vint32 mask3 = vint32_set(0, 0, 0, 1);
+    // TODO: Just right shift
+    vint32 mask0 = vint32_set(0xFFFF, 0, 0, 0);
+    vint32 mask1 = vint32_set(0, 0xFFFF, 0, 0);
+    vint32 mask2 = vint32_set(0, 0, 0xFFFF, 0);
+    vint32 mask3 = vint32_set(0, 0, 0, 0xFFFF);
 
     for (int i=1; i<height-1; i++) {
        
@@ -134,8 +146,8 @@ void next_generation_simd_i32(int_a **board, int height, int width) {
         b1 = vint32_load2D(board_c, i,   1);
         b2 = vint32_load2D(board_c, i+1, 1);
 
-        for (int j=1; j<width/4; j++) {
-   
+        for (int j=1; j<width/4-1; j++) {
+  
             /* Load new column */
             c0 = vint32_load2D(board_c, i-1, j+1);
             c1 = vint32_load2D(board_c, i,   j+1);
@@ -156,27 +168,27 @@ void next_generation_simd_i32(int_a **board, int height, int width) {
             ra = vint32_add3(r0, r1, r2);
 
             /* Compute */
-            sla1 = vint32_and(vint32_haddf(vint32_left(z, la)), mask0);
-            sla2 = vint32_and(vint32_haddf(vint32_right(la, z)),mask1);
+            sla1 = vint32_and(vint32_haddf(vint32_left2(z, la)), mask2);
+            sla2 = vint32_and(vint32_haddf(vint32_right2(la, z)),mask3);
 
-            sra1 = vint32_and(vint32_haddf(vint32_left(z, ra)), mask2);
-            sra2 = vint32_and(vint32_haddf(vint32_right(ra, z)), mask3);
+            sra1 = vint32_and(vint32_haddf(vint32_left2(z, ra)), mask0);
+            sra2 = vint32_and(vint32_haddf(vint32_right2(ra, z)), mask1);
 
             final = vint32_add4(sla1, sla2, sra1, sra2);
             final = vint32_sub(final, b1);
-
+           
             /* Rules */
             lt = vint32_lt(final, two);
-            gt = vint32_lt(final, three);
+            gt = vint32_gt(final, three);
             eq = vint32_eq(final, three);
 
             lt_o_gt = vint32_or(lt, gt);
 
-            updt = vint32_or(vint32_and(lt_o_gt, b1), vint32_and(eq, vint32_not(b1)));
-            
+            updt = vint32_or(vint32_and(lt_o_gt, b1), vint32_and(eq, vint32_not32(b1)));
+           
             final = vint32_add(updt, b1);
             final = vint32_and(final, vint32_lt(final, two));
- 
+
             /* Storing results */
             vint32_store2D(board, i, j, final);
 
@@ -187,8 +199,7 @@ void next_generation_simd_i32(int_a **board, int height, int width) {
 
             b0 = c0;
             b1 = c1;
-            b2 = c2;
-             
+            b2 = c2; 
         }
     }
 }

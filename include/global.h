@@ -29,6 +29,7 @@ typedef struct param_list_s {
 
     bool pause;
     bool debug;
+    bool simd;
 
 } param_list_t;
 
@@ -41,6 +42,7 @@ inline static void print_help() {
     printf("    -cs       [Cell size (px)] \n");
     printf("    -max_gen  [Maximum number of generation] \n");
     printf("    -period   [Time between 2 generations (in ms)] \n");
+    printf("    -simd     [Use simd, default=true] \n");
     printf("    -file     [Shape file] \n");
     printf("    -debug    : Debug mode \n");
     printf("    -h        : Display this information \n");
@@ -71,6 +73,7 @@ inline static void init_param_list(param_list_t *p) {
     p->pause            = false;
     p->debug            = false;
     p->filename         = "shape/shape.txt";
+    p->simd             = true;
 }
 
 inline static void print_param_list(param_list_t p) {
@@ -82,6 +85,7 @@ inline static void print_param_list(param_list_t p) {
     printf("    Nb max gen     : %lu \n", p.nb_max_gen);
     printf("    Period         : %d  \n", p.period);
     printf("    Debug          : %s  \n", p.debug ? "True" : "False");
+    printf("    SIMD           : %s  \n", p.simd ? "True" : "False");
     printf("\n");
 
 }
@@ -97,6 +101,8 @@ inline static void read_param_cmd(int argc, char *argv[], param_list_t *p) {
             p->nb_max_gen = atoi(argv[i+1]);
         else if (strcmp(argv[i], "-period") == 0 && argc > i + 1)
             p->period = atoi(argv[i+1]);
+        else if (strcmp(argv[i], "-simd") == 0 && argc > i + 1)
+            p->simd = (strcmp(argv[i+1], "true") == 0) ? true : false;
         else if (strcmp(argv[i], "-debug") == 0)
             p->debug = true;
         else if (strcmp(argv[i], "-file") == 0 && argc > i + 1)
