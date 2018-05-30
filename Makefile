@@ -1,9 +1,10 @@
-CC          = gcc-7
+CC          = gcc
 CFLAGS      = -O2 -msse2 -mssse3 
 
 INCLUDE     = -I include/
 LIBS        = -lSDL2 -lSDL2_ttf
 EXEC        = life
+DEFINE      = 
 
 SRC         = src/
 OBJ         = obj/

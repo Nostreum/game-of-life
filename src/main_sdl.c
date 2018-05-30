@@ -62,11 +62,6 @@ int main_sdl(int **board, param_list_t p){
         SDL_SetRenderDrawColor(board_sdl->renderer, 255, 255, 255, 255);
         SDL_RenderClear(board_sdl->renderer);
 
-        if (p.debug) {
-            printf("GENERATION : %d \n", gen);
-            show_board(board, p.height, p.width);
-        }
-
         SDL_Event event;
         while (SDL_PollEvent(&event)) {
             if (event.type == SDL_QUIT) {    
@@ -144,7 +139,7 @@ int main_sdl(int **board, param_list_t p){
         fps_frames++;
         if (fps_t1 < SDL_GetTicks() - FPS_INTERVAL * 1000) {
             fps_t1 = SDL_GetTicks();
-            printf("FPS = %u \n", fps_frames);
+            if(p.debug) printf("FPS = %u \n", fps_frames);
             fps_frames = 0;
         }
 
