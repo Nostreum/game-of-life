@@ -46,9 +46,9 @@ void init_board(int **board, int height, int width, char *filename) {
 
     read_file(filename, &h, &w, shape);  
  
-    for (int i = 0; i<h; i++) {
-        for (int j=0; j<w; j++) {
-            board[height/2 + j][width/2 + i] = shape[i][j];
+    for (int i = 0; i<w; i++) {
+        for (int j=0; j<h; j++) {
+            board[height/2 + j][width/2 + i] = shape[j][i];
         }
     }
 }

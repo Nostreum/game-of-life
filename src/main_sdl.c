@@ -137,14 +137,14 @@ int main_sdl(int **board, param_list_t p){
 
         X_OFFSCREEN(p.height - MOVE_SPEED);
         Y_OFFSCREEN(p.width  - MOVE_SPEED); 
-        int nb_cell_x = ( x + nx > p.height ) ? p.height  : x + nx;
-        int nb_cell_y = ( y + ny > p.width  ) ? p.width   : y + ny;
-        render_board_sdl(board_sdl, board, x, y, nb_cell_x, nb_cell_y, p.cell_size);
+        int nb_cell_x = ( x + nx > p.width ) ? p.width  : x + nx;
+        int nb_cell_y = ( y + ny > p.height  ) ? p.height   : y + ny;
+        render_board_sdl(board_sdl, board, y, x, nb_cell_y, nb_cell_x, p.cell_size);
 
         fps_frames++;
         if (fps_t1 < SDL_GetTicks() - FPS_INTERVAL * 1000) {
             fps_t1 = SDL_GetTicks();
-            if(p.debug) printf("FPS = %u \n", fps_frames);
+            printf("FPS = %u \n", fps_frames);
             fps_frames = 0;
         }
 
