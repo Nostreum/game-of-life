@@ -63,6 +63,14 @@ void clean_board(int **board, int height, int width) {
 
 }
 
+void free_board(int **board, int height, int width) {
+
+    for (int i=0; i<height; i++)
+        free(board[i]);
+
+    free(board);
+}
+
 void next_generation(int **board, int height, int width) {
 
     int **board_c = copy_board(board, height, width);
@@ -100,10 +108,7 @@ void next_generation(int **board, int height, int width) {
         }
     }
 
-    for (int i=0; i<height; i++)
-        free(board_c[i]);
-
-    free(board_c);
+    free_board(board_c, height, width);
 }
 
 void next_generation_simd_i32(int_a **board, int height, int width) {
@@ -201,6 +206,7 @@ void next_generation_simd_i32(int_a **board, int height, int width) {
             b2 = c2; 
         }
     }
+    free_board(board_c, height, width);
 }
 
 //TODO: Not totally functional
@@ -221,7 +227,6 @@ void next_generation_simd_i16(int_a **board, int height, int width) {
 
     vint16 final;
 
-    vint16 z = vint16_setall(0);
     vint16 two = vint16_setall(2);
     vint16 three = vint16_setall(3);
 
@@ -301,6 +306,7 @@ void next_generation_simd_i16(int_a **board, int height, int width) {
             b2 = c2; 
         }
     }
+    free_board(board_c, height, width);
 }
 
 // TODO: Not totally functional
@@ -321,7 +327,6 @@ void next_generation_simd_i8(int_a **board, int height, int width) {
 
     vint8 final;
 
-    vint8 z = vint8_setall(0);
     vint8 two = vint8_setall(2);
     vint8 three = vint8_setall(3);
 
@@ -409,6 +414,7 @@ void next_generation_simd_i8(int_a **board, int height, int width) {
             b2 = c2; 
         }
     }
+    free_board(board_c, height, width);
 }
 
 void update_board(int **board, int x, int y, int new_state) {
