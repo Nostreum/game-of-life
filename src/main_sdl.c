@@ -27,6 +27,7 @@ int main_sdl(int **board, param_list_t p){
     }
 
     struct timespec t1, t2;
+    struct timespec tnext1, tnext2;
     uint64_t diff;
     clock_gettime(CLOCK_MONOTONIC, &t1); 
     
@@ -150,10 +151,14 @@ int main_sdl(int **board, param_list_t p){
         SDL_RenderPresent(board_sdl->renderer); 
         if (!p.pause && diff > p.period) {
             t1 = t2;
+            clock_gettime(CLOCK_MONOTONIC, &tnext1);
             if(p.simd)
-                next_generation_simd_i32(board, p.height, p.width);
+                next_generation_simd_i8(board, p.height, p.width);
             else
                 next_generation(board, p.height, p.width);
+            clock_gettime(CLOCK_MONOTONIC, &tnext2);
+            uint64_t exec_time  = ( tnext2.tv_nsec - tnext1.tv_nsec ) / 1000000L + ( tnext2.tv_sec - tnext1.tv_sec ) * 1000L; 
+            printf("Next generation execution time : %u \n", exec_time);
             gen++;
         }
     }

@@ -1,5 +1,5 @@
 CC          = gcc
-CFLAGS      = -O2 -msse2 -mssse3 
+CFLAGS      = -O2 -Wall -msse2 -mssse3 
 
 INCLUDE     = -I include/
 LIBS        = -lSDL2 -lSDL2_ttf
@@ -24,5 +24,5 @@ all: $(EXEC)
 
 clean:
 	@echo Cleaning...
-	@ rm $(EXEC) $(OBJ_FILES)
+	@ rm $(EXEC) $(OBJ_FILES) *.txt
 	@echo OK
