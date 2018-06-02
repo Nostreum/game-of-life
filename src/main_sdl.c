@@ -75,16 +75,16 @@ int main_sdl(int **board, param_list_t p){
                         case SDLK_SPACE:
                             p.pause = p.pause ? false : true;
                             break;
-                        case SDLK_RIGHT:
+                        case (SDLK_RIGHT | SDLK_d) :
                             x += MOVE_SPEED;
                             break;
-                        case SDLK_LEFT:
+                        case (SDLK_LEFT | SDLK_q) :
                             x -= MOVE_SPEED;
                             break;
-                        case SDLK_UP:
+                        case (SDLK_UP | SDLK_z) :
                             y -= MOVE_SPEED;
                             break;
-                        case SDLK_DOWN:
+                        case (SDLK_DOWN | SDLK_s) :
                             y += MOVE_SPEED;
                             break;
                         case SDLK_a:
@@ -152,13 +152,13 @@ int main_sdl(int **board, param_list_t p){
         if (!p.pause && diff > p.period) {
             t1 = t2;
             clock_gettime(CLOCK_MONOTONIC, &tnext1);
-            if(p.simd)
-                next_generation_simd_i8(board, p.height, p.width);
+            if (p.simd)
+                next_generation_simd_i32(board, p.height, p.width);
             else
                 next_generation(board, p.height, p.width);
             clock_gettime(CLOCK_MONOTONIC, &tnext2);
             uint64_t exec_time  = ( tnext2.tv_nsec - tnext1.tv_nsec ) / 1000000L + ( tnext2.tv_sec - tnext1.tv_sec ) * 1000L; 
-            printf("Next generation execution time : %u \n", exec_time);
+            printf("Next generation execution time : %lu \n", exec_time);
             gen++;
         }
     }
@@ -166,4 +166,38 @@ int main_sdl(int **board, param_list_t p){
     SDL_Quit();
    
     return 0;
+}
+
+void launch_next_generation(int_a **board, int height, int width, param_list_t p) {
+
+    if (p.simd) {
+        switch (p.simd_size) {
+            case 8:
+                if(p.openmp)    next_generation_simd_i8_openmp(board, height, width);
+                else            next_generation_simd_i8(board, height, width);
+                break;
+
+            case 16:
+                if(p.openmp)    next_generation_simd_i16_openmp(board, height, width);
+                else            next_generation_simd_i16(board, height, width);
+                break;
+
+            case 32:
+                if(p.openmp)    next_generation_simd_i32_openmp(board, height, width);
+                else            next_generation_simd_i32(board, height, width);
+                break;
+
+            default:
+                printf("SIMD register size (%d) is not available.\n", p.simd_size);
+                printf("Available size are : 8/16/32 \n");
+                printf("Terminate. \n");
+                break;
+        }
+    }
+    else {
+        if(p.openmp)
+            next_generation_openmp(board, height, width);
+        else
+            next_generation(board, height, width);
+    }
 }

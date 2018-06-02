@@ -24,12 +24,14 @@ typedef struct param_list_s {
     int width;
     int period;
     int cell_size;
+    int simd_size;
 
     uint64_t nb_max_gen;
 
     bool pause;
     bool debug;
     bool simd;
+    bool openmp;
 
 } param_list_t;
 
@@ -37,15 +39,17 @@ inline static void print_help() {
 
     printf("Usage: life [option] \n");
     printf("Options: \n");
-    printf("    -h        [Nb of column] \n");
-    printf("    -w        [Nb of row] \n");
-    printf("    -cs       [Cell size (px)] \n");
-    printf("    -max_gen  [Maximum number of generation] \n");
-    printf("    -period   [Time between 2 generations (in ms)] \n");
-    printf("    -simd     [Use simd, default=true] \n");
-    printf("    -file     [Shape file] \n");
-    printf("    -debug    : Debug mode \n");
-    printf("    -h        : Display this information \n");
+    printf("    -h          [Nb of column] \n");
+    printf("    -w          [Nb of row] \n");
+    printf("    -cs         [Cell size (px)] \n");
+    printf("    -max_gen    [Maximum number of generation] \n");
+    printf("    -period     [Time between 2 generations (in ms)] \n");
+    printf("    -simd       [Use simd, default=true] \n");
+    printf("    -simd_size  [Data size (8/16/32)] \n");
+    printf("    -openmp     [Use openmp (default: true)] \n");
+    printf("    -file       [Shape file] \n");
+    printf("    -debug      : Debug mode \n");
+    printf("    -h          : Display this information \n");
     printf("\n\n");
     printf("Shape file synthax : \n");
     printf("    0 : Dead cell \n");
@@ -68,12 +72,14 @@ inline static void init_param_list(param_list_t *p) {
     p->height           = 16;
     p->width            = 16;
     p->cell_size        = 20;
+    p->simd_size        = 32;
     p->nb_max_gen       = 1000000L;
     p->period           = 250;
     p->pause            = false;
     p->debug            = false;
     p->filename         = "shape/shape.txt";
     p->simd             = true;
+    p->openmp           = true;
 }
 
 inline static void print_param_list(param_list_t p) {
@@ -86,8 +92,14 @@ inline static void print_param_list(param_list_t p) {
     printf("    Period         : %d  \n", p.period);
     printf("    Debug          : %s  \n", p.debug ? "True" : "False");
     printf("    SIMD           : %s  \n", p.simd ? "True" : "False");
-    printf("\n");
+ 
+    if(p.simd)
+        printf("    SIMD Data size : %d  \n", p.simd_size);
 
+    
+    printf("    OPENMP         : %s \n", p.openmp ? "True" : "False");
+ 
+    printf("\n");
 }
 
 inline static void read_param_cmd(int argc, char *argv[], param_list_t *p) {
@@ -99,10 +111,14 @@ inline static void read_param_cmd(int argc, char *argv[], param_list_t *p) {
             p->width = atoi(argv[i+1]);
         else if (strcmp(argv[i], "-max_gen") == 0 && argc > i + 1)
             p->nb_max_gen = atoi(argv[i+1]);
+        else if (strcmp(argv[i], "-simd_size") == 0 && argc > i + 1)
+            p->simd_size  = atoi(argv[i+1]);
         else if (strcmp(argv[i], "-period") == 0 && argc > i + 1)
             p->period = atoi(argv[i+1]);
         else if (strcmp(argv[i], "-simd") == 0 && argc > i + 1)
             p->simd = (strcmp(argv[i+1], "true") == 0) ? true : false;
+        else if (strcmp(argv[i], "-openmp") == 0 && argc > i + 1)
+            p->openmp = (strcmp(argv[i+1], "true") == 0) ? true : false;
         else if (strcmp(argv[i], "-debug") == 0)
             p->debug = true;
         else if (strcmp(argv[i], "-file") == 0 && argc > i + 1)

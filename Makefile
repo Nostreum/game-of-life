@@ -1,8 +1,8 @@
 CC          = gcc
-CFLAGS      = -O2 -Wall -msse2 -mssse3 
+CFLAGS      = -O2 -Wall -msse2 -mssse3 -fopenmp
 
 INCLUDE     = -I include/
-LIBS        = -lSDL2 -lSDL2_ttf
+LIBS        = -lSDL2 -lSDL2_ttf -fopenmp
 EXEC        = life
 DEFINE      = 
 
