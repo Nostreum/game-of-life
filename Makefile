@@ -16,7 +16,7 @@ $(OBJ)%.o: $(SRC)%.c
 	@ $(CC) $(CFLAGS) $(INCLUDE) -c $< -o $@
 
 $(EXEC): $(OBJ_FILES)	
-	@echo Linking..
+	@echo $(EXEC) Linking..
 	@ $(CC) -o $(EXEC) $(OBJ_FILES) $(LIBS)
 	@echo OK
 

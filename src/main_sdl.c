@@ -1,6 +1,7 @@
 #include <global.h>
 #include <board.h>
 #include <board_sdl.h>
+#include <main_sdl.h>
 #include <text.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
@@ -75,16 +76,16 @@ int main_sdl(int **board, param_list_t p){
                         case SDLK_SPACE:
                             p.pause = p.pause ? false : true;
                             break;
-                        case (SDLK_RIGHT | SDLK_d) :
+                        case SDLK_RIGHT :
                             x += MOVE_SPEED;
                             break;
-                        case (SDLK_LEFT | SDLK_q) :
+                        case SDLK_LEFT:
                             x -= MOVE_SPEED;
                             break;
-                        case (SDLK_UP | SDLK_z) :
+                        case SDLK_UP:
                             y -= MOVE_SPEED;
                             break;
-                        case (SDLK_DOWN | SDLK_s) :
+                        case SDLK_DOWN:
                             y += MOVE_SPEED;
                             break;
                         case SDLK_a:
@@ -152,13 +153,12 @@ int main_sdl(int **board, param_list_t p){
         if (!p.pause && diff > p.period) {
             t1 = t2;
             clock_gettime(CLOCK_MONOTONIC, &tnext1);
-            if (p.simd)
-                next_generation_simd_i32(board, p.height, p.width);
-            else
-                next_generation(board, p.height, p.width);
+            launch_next_generation(board, p.height, p.width, p);
             clock_gettime(CLOCK_MONOTONIC, &tnext2);
             uint64_t exec_time  = ( tnext2.tv_nsec - tnext1.tv_nsec ) / 1000000L + ( tnext2.tv_sec - tnext1.tv_sec ) * 1000L; 
-            printf("Next generation execution time : %lu \n", exec_time);
+            
+            if(p.debug) printf("Next generation execution time : %lu \n", exec_time);
+            
             gen++;
         }
     }
@@ -191,6 +191,7 @@ void launch_next_generation(int_a **board, int height, int width, param_list_t p
                 printf("SIMD register size (%d) is not available.\n", p.simd_size);
                 printf("Available size are : 8/16/32 \n");
                 printf("Terminate. \n");
+                exit(1);
                 break;
         }
     }
