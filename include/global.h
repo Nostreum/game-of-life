@@ -69,8 +69,8 @@ inline static void print_help() {
 
 inline static void init_param_list(param_list_t *p) {
 
-    p->height           = 16;
-    p->width            = 16;
+    p->height           = 50;
+    p->width            = 50;
     p->cell_size        = 20;
     p->simd_size        = 32;
     p->nb_max_gen       = 1000000L;
